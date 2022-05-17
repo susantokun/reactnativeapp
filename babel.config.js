@@ -4,9 +4,13 @@ module.exports = {
     [
       'babel-plugin-root-import',
       {
-        rootPathSuffix: 'src',
-        rootPathPrefix: '@',
+        rootPathSuffix: './src',
+        rootPathPrefix: '@/',
       },
     ],
+    ['module:react-native-dotenv', {
+      moduleName: '@env',
+      path: '.env',
+    }],
   ],
 };
