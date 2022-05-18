@@ -36,7 +36,6 @@ export default function Home() {
 
   const getData = async () => {
     setIsLoading(true);
-
     const reqData = await axios.post('/api/count_index.php', {
       kd_prsh: 'SPS0',
       kd_kprd: 'SPSJKT',
@@ -45,6 +44,7 @@ export default function Home() {
     }).then((res) => res.data).catch((err) => err.response);
     const resData = await reqData.data;
     setMessage(reqData.message);
+    setCountDocumentCompleted(resData.document_completed);
     setCountPotentialProject(resData.potential_project);
     setCountOutstandingSPK(resData.outstanding_spk);
     setCountOutstandingDocument(resData.outstanding_document);
@@ -53,24 +53,6 @@ export default function Home() {
     setCountReadyDocument(resData.ready_document);
     setCountOutstandingInvoice(resData.outstanding_invoice);
     setIsLoading(false);
-  };
-
-  const getDocumentCompleted = async () => {
-    setIsLoading(true);
-    const reqData = await axios.post('/api/get_document_completed.php', {
-      kd_prsh: 'SPS0',
-      kd_kprd: 'SPSJKT',
-      start_date: getStartDate,
-      end_date: getEndDate,
-    }).then((res) => res.data).catch((err) => err.response);
-    const resData = await reqData.data;
-    setCountDocumentCompleted(resData.count_document_completed);
-    setIsLoading(false);
-  };
-
-  const getAllData = async () => {
-    await getData();
-    await getDocumentCompleted();
   };
 
   const onChangeStartDate = (event, selectedDate) => {
@@ -94,7 +76,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    getAllData();
+    getData();
 
     return () => {
       setMessage(0);
@@ -152,7 +134,7 @@ export default function Home() {
         <View style={tw`flex w-full items-center justify-center flex-row pb-2 pt-6`}>
           <TouchableOpacity
             style={tw`${isDarkMode ? 'bg-white' : 'bg-red-500'} px-4 rounded-md shadow py-2`}
-            onPress={getAllData}
+            onPress={getData}
             disabled={isLoading}
           >
             <Text style={tw`${isDarkMode ? 'text-black' : 'text-white'} font-semibold`}>GET DATA</Text>
