@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, useColorScheme } from 'react-native';
 
 import tw from 'twrnc';
 
@@ -8,16 +8,17 @@ import Footer from './Footer';
 
 export default function AppLayout(props) {
   const { children } = props;
+  const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <View style={tw`bg-red-500 h-full flex w-full`}>
+    <View style={tw`${isDarkMode ? 'bg-black' : 'bg-white'} h-full flex w-full justify-between`}>
       <ScrollView>
         <Header />
-        <View style={tw`bg-green-500`}>
+        <View>
           { children }
         </View>
-        <Footer />
       </ScrollView>
+      <Footer />
     </View>
   );
 }

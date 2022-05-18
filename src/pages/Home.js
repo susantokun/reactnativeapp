@@ -150,10 +150,10 @@ export default function Home() {
             )}
           </View>
           <View style={tw`flex flex-row`}>
-            <Text>Filter: </Text>
-            <Text style={tw`font-bold`}>{getStartDate}</Text>
-            <Text> sampai </Text>
-            <Text style={tw`font-bold`}>{getEndDate}</Text>
+            <Text style={tw`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Filter </Text>
+            <Text style={tw`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-bold`}>{getStartDate}</Text>
+            <Text style={tw`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}> sampai </Text>
+            <Text style={tw`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-bold`}>{getEndDate}</Text>
           </View>
         </View>
 
