@@ -16,7 +16,7 @@ export default function Header() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <View style={tw`${isDarkMode ? 'bg-red-400' : 'bg-red-400'} relative h-24 flex w-full items-center justify-center border-b border-red-400`}>
+    <View style={tw`${isDarkMode ? 'bg-blue-400 border-blue-500' : 'bg-red-400 border-red-500'} relative h-24 flex w-full items-center justify-center border-b`}>
       <Image
         style={styles.cover}
         source={{
