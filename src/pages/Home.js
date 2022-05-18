@@ -1,8 +1,11 @@
+/* eslint-disable max-len */
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import {
-  Text, View, TouchableOpacity, useColorScheme,
+  Text, View, TouchableOpacity, useColorScheme, Button,
 } from 'react-native';
 
+import DateTimePicker from '@react-native-community/datetimepicker';
 import tw from 'twrnc';
 import { axios } from '@/lib/axios';
 
@@ -11,6 +14,14 @@ import Card from '@/components/Card';
 
 export default function Home() {
   const isDarkMode = useColorScheme() === 'dark';
+
+  const [dateStart, setDateStart] = useState(new Date());
+  const [dateEnd, setDateEnd] = useState(new Date());
+  const [showStartDate, setShowStartDate] = useState(false);
+  const [showEndDate, setShowEndDate] = useState(false);
+
+  const getStartDate = `${dateStart.getFullYear()}-${dateStart.getMonth() + 1}-${dateStart.getDate()}`;
+  const getEndDate = `${dateEnd.getFullYear()}-${dateEnd.getMonth() + 1}-${dateEnd.getDate()}`;
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -21,32 +32,69 @@ export default function Home() {
   const [countOutstandingDocumentReqApproval, setCountOutstandingDocumentReqApproval] = useState(0);
   const [countOngoingDocument, setcountOngoingDocument] = useState(0);
   const [countReadyDocument, setCountReadyDocument] = useState(0);
-  const [countOngoingInvoice, setCountOngoingInvoice] = useState(0);
+  const [countOutstandingInvoice, setCountOutstandingInvoice] = useState(0);
 
   const getData = async () => {
     setIsLoading(true);
 
-    const reqData = await axios.post('/api/counts', {
+    const reqData = await axios.post('/api/count_index.php', {
       kd_prsh: 'SPS0',
       kd_kprd: 'SPSJKT',
+      start_date: getStartDate,
+      end_date: getEndDate,
     }).then((res) => res.data).catch((err) => err.response);
     const resData = await reqData.data;
-    setTimeout(() => {
-      setMessage(reqData.message);
-      setCountDocumentCompleted(resData.count_document_completed);
-      setCountPotentialProject(resData.count_potential_project);
-      setCountOutstandingSPK(resData.count_outstanding_spk);
-      setCountOutstandingDocument(resData.count_outstanding_document);
-      setCountOutstandingDocumentReqApproval(resData.count_outstanding_document_req_approval);
-      setcountOngoingDocument(resData.count_ongoing_document);
-      setCountReadyDocument(resData.count_ready_document);
-      setCountOngoingInvoice(resData.count_ongoing_invoice);
-      setIsLoading(false);
-    }, 1000);
+    setMessage(reqData.message);
+    setCountPotentialProject(resData.potential_project);
+    setCountOutstandingSPK(resData.outstanding_spk);
+    setCountOutstandingDocument(resData.outstanding_document);
+    setCountOutstandingDocumentReqApproval(resData.outstanding_document_req_approval);
+    setcountOngoingDocument(resData.ongoing_document);
+    setCountReadyDocument(resData.ready_document);
+    setCountOutstandingInvoice(resData.outstanding_invoice);
+    setIsLoading(false);
+  };
+
+  const getDocumentCompleted = async () => {
+    setIsLoading(true);
+    const reqData = await axios.post('/api/get_document_completed.php', {
+      kd_prsh: 'SPS0',
+      kd_kprd: 'SPSJKT',
+      start_date: getStartDate,
+      end_date: getEndDate,
+    }).then((res) => res.data).catch((err) => err.response);
+    const resData = await reqData.data;
+    setCountDocumentCompleted(resData.count_document_completed);
+    setIsLoading(false);
+  };
+
+  const getAllData = async () => {
+    await getData();
+    await getDocumentCompleted();
+  };
+
+  const onChangeStartDate = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShowStartDate(false);
+    setDateStart(currentDate);
+  };
+
+  const onChangeEndDate = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShowEndDate(false);
+    setDateEnd(currentDate);
+  };
+
+  const showDatepickerStartDate = () => {
+    setShowStartDate('date');
+  };
+
+  const showDatepickerEndDate = () => {
+    setShowEndDate('date');
   };
 
   useEffect(() => {
-    getData();
+    getAllData();
 
     return () => {
       setMessage(0);
@@ -54,22 +102,60 @@ export default function Home() {
       setCountPotentialProject(0);
       setCountOutstandingSPK(0);
       setCountOutstandingDocument(0);
+      setCountOutstandingDocumentReqApproval(0);
       setcountOngoingDocument(0);
       setCountReadyDocument(0);
-      setCountOngoingInvoice(0);
+      setCountOutstandingInvoice(0);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <AppLayout>
       <View style={tw`${isDarkMode ? 'bg-black' : 'bg-white'} p-4 h-full`}>
-        <View style={tw`flex w-full items-center justify-center flex-row py-2`}>
+
+        <View style={tw`${isDarkMode ? 'border-gray-300' : 'border-red-300'} rounded-md flex flex-col w-full items-center justify-center p-4 border`}>
+          <View style={tw`flex w-full items-center justify-center flex-row py-2`}>
+            <View style={tw`mr-2`}>
+              <Button onPress={showDatepickerStartDate} title="Start Date" />
+            </View>
+            <View style={tw`ml-2`}>
+              <Button onPress={showDatepickerEndDate} title="End Date" />
+            </View>
+            {(showStartDate) && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={dateStart}
+              mode="date"
+              is24Hour
+              onChange={onChangeStartDate}
+            />
+            )}
+            {(showEndDate) && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={dateEnd}
+              mode="date"
+              is24Hour
+              onChange={onChangeEndDate}
+            />
+            )}
+          </View>
+          <View style={tw`flex flex-row`}>
+            <Text>Filter: </Text>
+            <Text style={tw`font-bold`}>{getStartDate}</Text>
+            <Text> sampai </Text>
+            <Text style={tw`font-bold`}>{getEndDate}</Text>
+          </View>
+        </View>
+
+        <View style={tw`flex w-full items-center justify-center flex-row pb-2 pt-6`}>
           <TouchableOpacity
             style={tw`${isDarkMode ? 'bg-white' : 'bg-red-500'} px-4 rounded-md shadow py-2`}
-            onPress={getData}
+            onPress={getAllData}
             disabled={isLoading}
           >
-            <Text style={tw`${isDarkMode ? 'text-black' : 'text-white'} font-semibold`}>Refresh</Text>
+            <Text style={tw`${isDarkMode ? 'text-black' : 'text-white'} font-semibold`}>GET DATA</Text>
           </TouchableOpacity>
         </View>
 
@@ -91,14 +177,14 @@ export default function Home() {
 
         <View style={tw`flex w-full flex-row items-center justify-center px-2 mt-4`}>
           <Card styles="w-1/2 mr-2" isLoading={isLoading} title="Ready Document" count={countReadyDocument} />
-          <Card styles="w-1/2 ml-2" isLoading={isLoading} title="Ongoing Invoice" count={countOngoingInvoice} />
+          <Card styles="w-1/2 ml-2" isLoading={isLoading} title="Ongoing Invoice" count={countOutstandingInvoice} />
         </View>
 
-        <View style={tw`${isDarkMode ? 'border-gray-300' : 'border-red-300'} mt-4 border p-4 flex items-center justify-center rounded-lg`}>
+        {/* <View style={tw`${isDarkMode ? 'border-gray-300' : 'border-red-300'} mt-4 border p-4 flex items-center justify-center rounded-lg`}>
           <Text style={tw`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
             {!isLoading ? message : 'Loading...'}
           </Text>
-        </View>
+        </View> */}
       </View>
     </AppLayout>
   );

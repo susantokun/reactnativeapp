@@ -11,7 +11,7 @@ export const http = Axios.create({
 export const axios = Axios.create({
   baseURL: envs.API_URL,
   headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
+    Accept: '*',
+    'Content-Type': 'multipart/form-data',
   },
 });

@@ -13,9 +13,7 @@ export default function Card(props) {
     <View style={tw`${styles} ${isDarkMode ? 'border-gray-300' : 'border-red-200'} rounded-lg border p-4 flex items-start justify-start`}>
       <Text style={tw`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-xs`}>{title}</Text>
       <Text style={tw`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-bold text-lg`}>
-        {!isLoading ? count : '...'}
-        {' '}
-        {countReqApproval && `/${!isLoading ? countReqApproval : '...'}`}
+        {!isLoading ? `${count}${countReqApproval !== undefined ? ` / ${countReqApproval}` : ''}` : '...'}
       </Text>
     </View>
   );
