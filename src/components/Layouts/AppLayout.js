@@ -1,31 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import React from 'react';
+import { View, ScrollView } from 'react-native';
+
+import tw from 'twrnc';
 
 import Header from './Header';
-// import Footer from './Footer';
+import Footer from './Footer';
 
 export default function AppLayout(props) {
   const { children } = props;
-  const [title, setTitle] = useState('');
-
-  const getConfiguration = () => {
-    setTitle('KKAps');
-  };
-
-  useEffect(() => {
-    getConfiguration();
-    return () => {
-      setTitle('');
-    };
-  }, []);
 
   return (
-    <View>
-      <Header title={title} />
-      <View>
-        { children }
-      </View>
-      {/* <Footer /> */}
+    <View style={tw`bg-red-500 h-full flex w-full`}>
+      <ScrollView>
+        <Header />
+        <View style={tw`bg-green-500`}>
+          { children }
+        </View>
+        <Footer />
+      </ScrollView>
     </View>
   );
 }

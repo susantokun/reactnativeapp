@@ -5,6 +5,7 @@ import {
   Text, View, TouchableOpacity, useColorScheme, Button,
 } from 'react-native';
 
+import PushNotification from 'react-native-push-notification';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import tw from 'twrnc';
 import { axios } from '@/lib/axios';
@@ -52,6 +53,15 @@ export default function Home() {
     setcountOngoingDocument(resData.ongoing_document);
     setCountReadyDocument(resData.ready_document);
     setCountOutstandingInvoice(resData.outstanding_invoice);
+
+    PushNotification.localNotification({
+      channelId: 'test-channel',
+      title: 'Hello!',
+      message: 'You clicked',
+      color: 'red',
+      id: 1,
+    });
+
     setIsLoading(false);
   };
 
@@ -75,6 +85,22 @@ export default function Home() {
     setShowEndDate('date');
   };
 
+  // PushNotification.localNotification({
+  //   channelId: 'test-channel',
+  //   title: 'Hello!',
+  //   message: 'You clicked',
+  //   color: 'red',
+  //   id: 1,
+  // });
+
+  // PushNotification.localNotificationSchedule({
+  //   channelId: 'test-channel',
+  //   title: 'Alarm',
+  //   message: 'You clicked',
+  //   date: new Date(Date.now() + 20 * 100),
+  //   allowWhileIdle: true,
+  // });
+
   useEffect(() => {
     getData();
 
@@ -94,7 +120,7 @@ export default function Home() {
 
   return (
     <AppLayout>
-      <View style={tw`${isDarkMode ? 'bg-black' : 'bg-white'} p-4 h-full`}>
+      <View style={tw`${isDarkMode ? 'bg-black' : 'bg-white'} p-4 h-auto`}>
 
         <View style={tw`${isDarkMode ? 'border-gray-300' : 'border-red-300'} rounded-md flex flex-col w-full items-center justify-center p-4 border`}>
           <View style={tw`flex w-full items-center justify-center flex-row py-2`}>
